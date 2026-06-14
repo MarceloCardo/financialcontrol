@@ -1,59 +1,44 @@
-from imap_tools import MailBox, AND
-from dotenv import load_dotenv
-import os
-from src.utils import DOWN_PATH, require_env
-from config import MAIL_SUBJECT, MAIL_FROM, MAIL_FOLDER, ATT_TYPE
+from imap_tools import MailBox
+
 from pathlib import Path
 
-load_dotenv()
-
-host = require_env(os.getenv('HOST'))
-user = require_env(os.getenv('USER'))
-pwd = require_env(os.getenv('APP_PWD'))
 
 
-def load_att(mailbox, att_type, subject, from_):
-    mailbox.folder.set(MAIL_FOLDER)
+def load_att(mailbox, config):
+    mailbox.folder.set(config.email_folder)
     for msg in mailbox.fetch():
-        if subject and subject not in (msg.subject or ""):
+        if config.email_subject and config.email_subject not in (msg.subject or ""):
             continue
 
-        if from_ and from_ not in (msg.from_ or ""):
+        if config.email_from and config.email_from not in (msg.from_ or ""):
             continue
 
         if not msg.attachments:
             continue
 
         for att in msg.attachments:
-            if att.filename.endswith(att_type):
-                # print(att.filename, att.content_type)
-                # print(msg.date, msg.subject)
-
-                if DOWN_PATH:
-                    path = Path(DOWN_PATH)/att.filename
+            if att.filename.endswith(config.file_type):
+                if config.file_path:
+                    path = Path(config.file_path)/att.filename
                 else:
-                    DOWN_PATH.mkdir(exist_ok=True)
-                    path = DOWN_PATH/att.filename
+                    config.file_path.mkdir(exist_ok=True)
+                    path = config.file_path/att.filename
 
                 with open(path, 'wb') as f:
                     f.write(att.payload)
         
-
-
-def download_bills():
+def download_bills(config):
     with MailBox(host).login(user, pwd) as mailbox:
         load_att(
             mailbox,
-            att_type=ATT_TYPE,
-            subject=MAIL_SUBJECT,
-            from_=MAIL_FROM
+            config.file_path,
+            config.file_type,
+            config.email_folder,
+            config.email_subject,
+            config.email_from
         )
-        # for msg in mailbox.fetch():
-            # print(msg.date, msg.subject, len(msg.text or msg.html))
-            # for att in msg.attachments:
-                # print(att.filename)
-                
+ 
                 
 if __name__ == '__main__':
-    download_bills()
+    download_bills('C:/Users/Marcelo Cardoso/OneDrive/programming/portfolio/FinancialControl 0.1v/data/raw','.ofx', "FinancialControl", "Extrato da fatura do Cartão Nubank", "todomundo@nubank.com.br")
 

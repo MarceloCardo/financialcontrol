@@ -1,0 +1,13 @@
+    {
+    "email": {
+        "email_folder": "FinancialControl",
+        "email_from": "todomundo@nubank.com.br",
+        "email_subject": "Extrato da fatura do Cartão Nubank"
+    },
+    "file": {
+        "types": [".ofx"]
+    },
+    "paths": {
+        "download": ""
+    }
+    }
