@@ -1,6 +1,6 @@
 # database
-database/*.db
-database/*.sqlite
+*.db
+*.sqlite
 
 # parquet
 *.parquet
@@ -8,7 +8,8 @@ database/*.parquet
 database/*.parquet/
 
 # raw data (OFX, CSV, etc.)
-arc/
+*.OFX
+*.CSV
 
 # VS Code
 .vscode/
