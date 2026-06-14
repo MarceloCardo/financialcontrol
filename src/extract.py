@@ -3,7 +3,6 @@ from imap_tools import MailBox
 from pathlib import Path
 
 
-
 def load_att(mailbox, config):
     mailbox.folder.set(config.email_folder)
     for msg in mailbox.fetch():
@@ -27,7 +26,7 @@ def load_att(mailbox, config):
                 with open(path, 'wb') as f:
                     f.write(att.payload)
         
-def download_bills(config):
+def download_bills(config, host, user, pwd):
     with MailBox(host).login(user, pwd) as mailbox:
         load_att(
             mailbox,
