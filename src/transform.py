@@ -1,10 +1,12 @@
+from ofxparse.ofxparse import Ofx, Account, Transaction, OfxParser
 import pandas as pd
 import hashlib
-from ofxparse.ofxparse import Ofx, Account, Transaction, OfxParser
 from pathlib import Path
-from src.utils import ROOT_DOWN_PATH
 
-folder = Path(ROOT_DOWN_PATH)
+root_file = Path(__file__).parent.parent / "data" / "raw"
+root_file.mkdir(parents=False, exist_ok=True)
+
+
 
 def transform(folder):
     data = []
@@ -24,7 +26,8 @@ def transform(folder):
                     data.append({
                         "date": stt.date,
                         "name": stt.memo,
-                        "amount": stt.amount
+                        "amount": stt.amount,
+                        "type": stt.type
                     })
 
     df = pd.DataFrame(data)
@@ -34,8 +37,9 @@ def transform(folder):
     df["year"] = df["date"].dt.year
     df["month_number"] = df["date"].dt.month
     df["name"] = df["name"].astype(str).str.strip()
+    df["type"] = df["type"].astype(str).str.strip()
     df["amount"] = df["amount"].astype(float)
-
+    
     df["date"] = df["date"].dt.date
 
     # create unique hash code
@@ -45,8 +49,11 @@ def transform(folder):
         df["name"] +
         "|" +
         df["amount"].astype(str)
+        
     ).apply(lambda x: hashlib.sha256(x.encode()).hexdigest())
-
+    
     df_raw_data = df.drop_duplicates(subset=["unique_key"])
     
     return df_raw_data
+
+# if __name__ == '__main__':

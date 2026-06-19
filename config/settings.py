@@ -1,24 +1,27 @@
 import json
 from pathlib import Path
 from dotenv import load_dotenv
-from src.utils import require_env
 
 # load enviroments
+load_dotenv()
 import os
 
-def load_env():
-    load_dotenv()
-    return {
-        "host" : require_env(os.getenv('HOST')),
-        "user" : require_env(os.getenv('USER')),
-        "pwd"  :require_env(os.getenv('APP_PWD'))
-    }
+class ConfigEnv:
+    def __init__(self):
+        self.host = self.require_env(os.getenv('HOST'))
+        self.app_user = self.require_env(os.getenv('APP_USER'))
+        self.pwd = self.require_env(os.getenv('APP_PWD'))
+        
+    def require_env(self, value):
+        if value is None:
+            raise ValueError('Env variables not found')
+        return value
 
 # load json parameters
 config_path = Path('config/config.json')
 
 root_path = Path(__file__).parent.parent
-default_file_path = Path(root_path, 'arc')
+default_file_path = Path(root_path, 'data', 'raw')
 
 def load_config():
     with open(config_path, 'r', encoding='utf-8') as j:
@@ -27,9 +30,9 @@ def load_config():
 
 class ConfigManager:
     def __init__(self, config: dict | list):
-        
+
         self.email_subject = self.require(config, "email.email_subject")
-        self.email_from = self.require( config, "email.email_from")
+        self.email_from = self.require(config, "email.email_from")
         self.email_folder = self.require(config, "email.email_folder")
         self.file_type = self.require(config, "file.types")
         self.file_path = config.get("paths", {}).get("download") or default_file_path
@@ -46,7 +49,7 @@ class ConfigManager:
 
 if __name__ == '__main__':
     config = load_config()
-    
+   
     load_param = ConfigManager(config)
     print(
         load_param.email_folder, 

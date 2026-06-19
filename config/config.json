@@ -5,7 +5,7 @@
         "email_subject": "Extrato da fatura do Cartão Nubank"
     },
     "file": {
-        "types": [".ofx"]
+        "types": ".ofx"
     },
     "paths": {
         "download": ""

@@ -1,7 +1,5 @@
 from imap_tools import MailBox
-
 from pathlib import Path
-
 
 def load_att(mailbox, config):
     mailbox.folder.set(config.email_folder)
@@ -25,19 +23,14 @@ def load_att(mailbox, config):
 
                 with open(path, 'wb') as f:
                     f.write(att.payload)
-        
+       
+ 
 def download_bills(config, host, user, pwd):
     with MailBox(host).login(user, pwd) as mailbox:
         load_att(
-            mailbox,
-            config.file_path,
-            config.file_type,
-            config.email_folder,
-            config.email_subject,
-            config.email_from
+            mailbox, config
         )
- 
-                
+                 
 if __name__ == '__main__':
-    download_bills('C:/Users/Marcelo Cardoso/OneDrive/programming/portfolio/FinancialControl 0.1v/data/raw','.ofx', "FinancialControl", "Extrato da fatura do Cartão Nubank", "todomundo@nubank.com.br")
+    download_bills()
 
