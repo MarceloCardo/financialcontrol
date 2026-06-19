@@ -1,17 +1,14 @@
 from ofxparse.ofxparse import Ofx, Account, Transaction
 import pandas as pd
 from ofxparse import OfxParser
-from src.utils import ROOT_DOWN_PATH
 from pathlib import Path
 import sqlite3
 import hashlib
-folder = Path(ROOT_DOWN_PATH)
-
-print(ROOT_DOWN_PATH)
 
 
-def load_database():
 
+def load_database(folder):
+    
     data = []
     for filename in folder.glob("*.ofx"):
         # print(file)
@@ -54,8 +51,8 @@ def load_database():
 
     df = df.drop_duplicates(subset=["unique_key"])
 
-    db_path = Path("database") / "financial.db"
-    parquet_path = Path("database") / "financial.parquet"
+    parquet_path = Path(__file__).parent.parent / "data" / "historical" / "financial.parquet"
+    db_path = Path(__file__).parent.parent / "data" / "mart" / "financial.db"
 
     engine = sqlite3.connect(db_path)
     cursor = engine.cursor()
@@ -73,21 +70,20 @@ def load_database():
                 )
                 """)
 
-
     df_db = pd.read_sql("SELECT [unique_key] from nubankFinance", con=engine)
-    
+
     df = df[~df["unique_key"].isin(df_db["unique_key"])]
-    
+
     if not df.empty:
         try:
             df.to_sql(name='nubankFinance', con=engine,
-                  if_exists="append", index=False)
-            print('carregado para o banco')
+                      if_exists="append", index=False)
+            print('Upload to database')
         except NotImplementedError as e:
             raise e
 
     df.to_parquet(parquet_path, partition_cols=["year", "month_number"])
-    print('backup parset criado')
+    print('Historical parset criado')
 
 
 if __name__ == '__main__':

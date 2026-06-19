@@ -1,0 +1,17 @@
+email:
+  email_folder: 'FinancialControl' 
+  email_from: 'todomundo@nubank.com.br' 
+  email_subject: 'Extrato da fatura do Cartão Nubank'
+
+file:
+ # Can add: '.ofx', '.csv', '.xlsx'
+  types:
+    ['.ofx']
+
+paths:
+# opt: defaults '..data/raw' in the main directory.
+  download: ''
+
+
+   
+
